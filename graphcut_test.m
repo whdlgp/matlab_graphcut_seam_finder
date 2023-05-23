@@ -6,10 +6,16 @@ clc;
 % 2 : weight with RGB pixel, use gradiant method
 weight_type = 1;
 
+%weight bias for preventing zero weight
+add_weight_bias = 1;
+
 %original images and mask
 % RGB
 im1 = imread('im1.jpg');
 im2 = imread('im2.jpg');
+
+%im1 = imresize(im1,[100 100]);
+%im2 = imresize(im2,[100 100]);
 
 [height, width, channel] = size(im1);
 
@@ -24,14 +30,14 @@ weight = zeros(1,number_of_pair); % image graph's edge and source, sink edge
 
 index = 1;
 
+% progress bar
+pb = waitbar(0,'Please wait...');
+
 % 1 : weight with RGB pixel
 if weight_type==1
     % draw graph with image pixels
     for vertex = 1:vertice_size
-        disp('vertice number :');
-        disp(vertex);
-        disp('percentage :');
-        disp(100*(vertex/vertice_size));
+        waitbar(vertex/vertice_size,pb,'Creating graph, weight type 1');
 
         x = mod(vertex-1, width) + 1;
         y = fix((vertex-1) / width) + 1;
@@ -82,10 +88,7 @@ if weight_type==2
 
     % draw graph with image pixels
     for vertex = 1:vertice_size
-        disp('vertice number :');
-        disp(vertex);
-        disp('percentage :');
-        disp(100*(vertex/vertice_size));
+        waitbar(vertex/vertice_size,pb,'Creating graph, weight type 2');
 
         x = mod(vertex-1, width) + 1;
         y = fix((vertex-1) / width) + 1;
@@ -111,6 +114,8 @@ if weight_type==2
     end
 end
 
+close(pb)
+
 % Last 2 vertex is source and sink
 % Add source
 for i = 1:height
@@ -128,11 +133,16 @@ for i = 1:height
     index = index+1;
 end
 
+% Add weight bias to prevent zero weight value
+weight = weight + add_weight_bias;
+
+% Do maxflow/mincut
 seam_graph = graph(s, t, weight);
 [mf, gf, cs, ct] = maxflow(seam_graph, vertice_size + 1, vertice_size + 2);
 
 % draw new seam mask
 
+% seam mask from source
 cs_x = mod(cs-1, width) + 1;
 cs_y = fix((cs-1) / width) + 1;
 
@@ -179,6 +189,3 @@ imshow(seam_draw);
 imwrite(seam_mask, 'seam_mask.jpg');
 imwrite(result, 'result.jpg');
 imwrite(seam_draw, 'seam_draw.jpg');
-
-%figure(4);
-%plot(seam_graph, 'EdgeLabel', seam_graph.Edges.Weight);
