@@ -11,8 +11,16 @@ Slow, Made for practice. Assuming that warping already done, find the seam betwe
 ![](./im2.jpg)
 
 #### Find seam, draw mask
-![](./seam_mask_sample.jpg)
+with weight bias zero  
+![](./seam_mask_sample.jpg)  
+with weight bias 1  
+![](./seam_mask_sample2.jpg)  
 
 #### Merge, draw seam on merged image
-![](./result_sample.jpg)
-![](./seam_draw_sample.jpg)
+with weight bias zero  
+![](./result_sample.jpg)  
+![](./seam_draw_sample.jpg)  
+
+with weight bias 1  
+![](./result_sample2.jpg)  
+![](./seam_draw_sample2.jpg)  
